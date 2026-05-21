@@ -129,17 +129,21 @@
            APPLE SPLIT INTRO OVERLAY (SCROLLGESTEUERT MIT ECHTEM SPLIT)
            ------------------------------------------------------------- */
         .split-intro {
-            position: relative;
-            height: var(--max-scroll); /* Bestimmt die Scroll-Distanz der Animation im Dokumentenfluss */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 2000;
-            pointer-events: none !important; /* Blockadefrei: Scrollen wird an Body weitergeleitet */
+            pointer-events: none !important; /* Blockadefrei: Scrollgesten gehen an den Spacer */
         }
 
         .split-sticky {
-            position: sticky;
+            position: absolute;
             top: 0;
-            height: 100vh;
+            left: 0;
             width: 100%;
+            height: 100%;
             overflow: hidden;
             z-index: 2000;
             pointer-events: none !important;
@@ -262,22 +266,22 @@
         }
 
         /* -------------------------------------------------------------
-           SCROLL-PLATZHALTER FÜR DAS INTRO
+           SCROLL-PLATZHALTER FÜR DAS INTRO (Zwingt die Scroll-Physik)
            ------------------------------------------------------------- */
         .scroll-spacer {
-            height: var(--max-scroll);
+            height: calc(100vh + var(--max-scroll));
             width: 100%;
             pointer-events: none !important;
         }
 
         /* -------------------------------------------------------------
-           ABS-FIXED FLOATING HEADER DOCK (DIREKTES KIND VON BODY)
+           ABS-FIXED FLOATING HEADER DOCK (Felsenfester Apple-Dock)
            ------------------------------------------------------------- */
         header {
             position: fixed;
             top: 20px;
             left: 50%;
-            transform: translate3d(-50%, 0, 0); /* Perfekte, felsenfeste horizontale Ausrichtung */
+            transform: translate3d(-50%, 0, 0); /* Perfekte horizontale Ausrichtung */
             width: calc(100% - 40px);
             max-width: 1240px; /* Absolut bündig mit dem max-width des Haupt-Contents */
             background: var(--glass-bg);
@@ -408,7 +412,7 @@
         }
 
         /* -------------------------------------------------------------
-           HAUPT-CONTAINER
+           HAUPT-CONTAINER (REIN IM NORMALEN DOKUMENTENFLUSS)
            ------------------------------------------------------------- */
         #app-container {
             position: relative;
@@ -945,7 +949,7 @@
     </div>
 
     <!-- Scrollplatzhalter, der die native Scroll-Distanz im Dokumentenfluss vorgibt -->
-    <div class="scroll-spacer"></div>
+    <div class="scroll-spacer" id="scroll-spacer"></div>
 
     <!-- ABS-FIXED FLOATING HEADER DOCK (Vollkommen unabhängig von app-container positioniert) -->
     <header>
@@ -1045,7 +1049,7 @@
                     </div>
                     <div class="glass-card">
                         <h3>Privat-Haftpflicht</h3>
-                        <p>Ein unverzichtbares Muss für jeden Haushalt. Sie schützt Sie im Alltag vor existenzbedrohenden Schadenersatzansprüchen Dritter.</p>
+                        <p>Ein unverzicht Muss für jeden Haushalt. Sie schützt Sie im Alltag vor existenzbedrohenden Schadenersatzansprüchen Dritter.</p>
                     </div>
                     <div class="glass-card">
                         <h3>Fahrzeuge & Mobilität</h3>
@@ -1270,7 +1274,7 @@
     </div>
 
     <!-- -------------------------------------------------------------
-         JAVASCRIPT LOGIK (ABSOLUT KRASH- & BLOCKADEFREI)
+         JAVASCRIPT LOGIK
          ------------------------------------------------------------- -->
     <script>
         // Sitzungsspeicher-Abfrage in Sicherheitsblock verpacken (verhindert lokale Dateisystem-Abstürze)
@@ -1319,7 +1323,7 @@
 
         function bypassIntroElements() {
             const introBlock = document.getElementById('split-intro-block');
-            const spacer = document.querySelector('.scroll-spacer');
+            const spacer = document.getElementById('scroll-spacer');
             const appContainer = document.getElementById('app-container');
             const header = document.querySelector('header');
 
