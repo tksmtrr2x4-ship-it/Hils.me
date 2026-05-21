@@ -139,11 +139,10 @@
         }
 
         .split-sticky {
-            position: absolute;
+            position: sticky;
             top: 0;
-            left: 0;
+            height: 100vh;
             width: 100%;
-            height: 100%;
             overflow: hidden;
             z-index: 2000;
             pointer-events: none !important;
@@ -156,7 +155,7 @@
             height: 100%;
             background: var(--bg-gradient);
             overflow: hidden; /* Beschneidet den Inhalt exakt an der Trennlinie */
-            transition: background 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             z-index: 1;
             will-change: transform;
             pointer-events: none !important;
@@ -167,9 +166,19 @@
             transform: translate3d(0, 0, 0);
         }
 
+        /* Mobiler Aktivierungsübergang */
+        .split-intro.split-active .curtain-left {
+            transform: translate3d(-100%, 0, 0) !important;
+        }
+
         .curtain-right {
             right: 0;
             transform: translate3d(0, 0, 0);
+        }
+
+        /* Mobiler Aktivierungsübergang */
+        .split-intro.split-active .curtain-right {
+            transform: translate3d(100%, 0, 0) !important;
         }
 
         /* Symmetrische Inhaltscontainer innerhalb der Vorhänge */
@@ -182,9 +191,16 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: transform, opacity;
             pointer-events: none !important;
             z-index: 2; /* Liegt über der Trennlinie */
+        }
+
+        /* Mobiler Aktivierungsübergang */
+        .split-intro.split-active .intro-content-wrapper {
+            opacity: 0 !important;
+            transform: translate3d(0, -60%, 0) scale(0.92) !important;
         }
 
         .curtain-left .intro-content-wrapper {
@@ -363,6 +379,11 @@
 
         nav a:hover, nav a.active {
             color: var(--text-main);
+        }
+
+        /* Mobile Theme Toggle Button im Menü-Dropdown (In Desktop standardmäßig verborgen) */
+        .theme-toggle-mobile {
+            display: none;
         }
 
         /* Theme Panel */
@@ -885,10 +906,15 @@
             body.intro-done main {
                 padding-top: 110px !important;
             }
+            /* Verberge Desktop Statusanzeigen auf dem Handy */
+            .theme-panel .theme-status,
+            .theme-panel .theme-toggle {
+                display: none;
+            }
             nav {
                 display: none;
                 position: absolute;
-                top: 110px;
+                top: 95px;
                 left: 0;
                 width: 100%;
                 background: var(--glass-bg);
@@ -896,40 +922,36 @@
                 -webkit-backdrop-filter: var(--blur-header);
                 border: 1px solid var(--glass-border);
                 border-radius: 20px;
-                padding: 20px;
+                padding: 24px;
                 flex-direction: column;
-                gap: 15px;
+                gap: 16px;
+                box-shadow: var(--glass-shadow);
             }
             nav.mobile-active {
                 display: flex;
             }
+            /* Mobiler Toggle Button im Dropdown */
+            .theme-toggle-mobile {
+                display: block !important;
+                background: var(--text-main);
+                border: none;
+                color: var(--card-bg);
+                padding: 8px 16px;
+                border-radius: 980px;
+                cursor: pointer;
+                font-weight: 500;
+                font-size: 13px;
+                text-align: center;
+                margin-top: 8px;
+                width: 100%;
+            }
             .menu-toggle {
                 display: block;
-            }
-            .contact-wrapper {
-                grid-template-columns: 1fr;
-            }
-            .timeline::before {
-                left: 30px;
-            }
-            .timeline-item {
-                width: 100%;
-                padding-left: 60px;
-                padding-right: 0;
-            }
-            .timeline-item.left {
-                text-align: left;
-            }
-            .timeline-item.left::after, .timeline-item.right::after {
-                left: 25px;
-            }
-            .timeline-item.right {
-                left: 0;
             }
         }
     </style>
 </head>
-<body class="intro-active">
+<body>
 
     <!-- Blitzschneller Check vor dem grafischen Rendering, um Flackern (FOUC) beim Neuladen zu verhindern -->
     <script>
@@ -1019,6 +1041,8 @@
             <a onclick="switchSection('about')">Wir über uns</a>
             <a onclick="switchSection('nachhaltigkeit')">Nachhaltigkeit</a>
             <a onclick="switchSection('contact')">Kontakt & Anfahrt</a>
+            <!-- Mobiler Theme Toggle im Dropdown-Menü -->
+            <button class="theme-toggle-mobile" onclick="toggleThemeManual()">🌙 Modus wechseln</button>
         </nav>
 
         <div class="theme-panel">
@@ -1323,7 +1347,7 @@
     </div>
 
     <!-- -------------------------------------------------------------
-         JAVASCRIPT LOGIK
+         JAVASCRIPT LOGIK (ZWEIPHASEN-SCROLL-LOCK-ENGINE)
          ------------------------------------------------------------- -->
     <script>
         // Sitzungsspeicher-Abfrage in Sicherheitsblock verpacken (verhindert lokale Dateisystem-Abstürze)
@@ -1335,6 +1359,8 @@
         }
 
         let maxScroll = 500; // Dynamischer Fallback-Wert
+        // Überprüft, ob es sich um ein Smartphone oder Tablet handelt (Touch-Schnittstelle)
+        const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
         document.addEventListener("DOMContentLoaded", () => {
             initThemeEngine();
@@ -1345,17 +1371,75 @@
         // SCROLL-GEKOPPELTER "STOP-AND-GO" REVEAL EFFEKT
         // -------------------------------------------------------------
         function initSplitScrollEngine() {
-            updateScrollDimensions(); // Initiale Pixelmessung des Laptop-Bildschirms
-            
             if (isIntroFinished) {
                 // Falls bereits absolviert, Intro-DOM direkt entfernen und App sofort freigeben
                 bypassIntroElements();
                 return;
             }
 
-            window.addEventListener('resize', updateScrollDimensions);
-            window.addEventListener('scroll', handleIntroScroll, { passive: true });
-            handleIntroScroll(); // Initialer Aufruf
+            if (isMobileDevice) {
+                // Mobilgeräte-Konfiguration:
+                // Platzhalter komplett entfernen, damit kein leerer Bereich gescrollt werden muss
+                const spacer = document.getElementById('scroll-spacer');
+                if (spacer) spacer.remove();
+                
+                // App-Container direkt auf Normalfluss setzen
+                const appContainer = document.getElementById('app-container');
+                if (appContainer) {
+                    appContainer.style.position = 'relative';
+                    appContainer.style.top = '';
+                    appContainer.style.left = '';
+                    appContainer.style.width = '';
+                    appContainer.style.transform = '';
+                }
+
+                // Header vorbereiten (noch unsichtbar)
+                const header = document.querySelector('header');
+                if (header) {
+                    header.style.opacity = '0';
+                    header.style.pointerEvents = 'none';
+                }
+
+                // Lausche auf die erste leichte Wischgeste oder Scroll-Bewegung
+                window.addEventListener('scroll', triggerMobileSplit, { once: true, passive: true });
+                window.addEventListener('touchmove', triggerMobileSplit, { once: true, passive: true });
+                window.addEventListener('click', triggerMobileSplit, { once: true, passive: true });
+            } else {
+                // Desktop-Konfiguration (Stop-and-Go gekoppelt)
+                updateScrollDimensions();
+                window.addEventListener('resize', updateScrollDimensions);
+                window.addEventListener('scroll', handleIntroScroll, { passive: true });
+                handleIntroScroll(); // Initialer Aufruf
+            }
+        }
+
+        // Mobilgeräte-Teilung per flüssiger CSS-Animation starten (verhindert asynchrones Ruckeln auf iPhones)
+        function triggerMobileSplit() {
+            if (isIntroFinished) return;
+            isIntroFinished = true;
+            try {
+                sessionStorage.setItem('intro-finished', 'true');
+            } catch (e) {}
+
+            const introBlock = document.getElementById('split-intro-block');
+            const header = document.querySelector('header');
+            
+            if (introBlock) {
+                // Aktiviert die flüssigen 60fps CSS-Transitions
+                introBlock.classList.add('split-active');
+            }
+
+            if (header) {
+                header.style.transition = 'opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+                header.style.opacity = '1';
+                header.style.pointerEvents = 'auto';
+            }
+
+            // Nach Ablauf der CSS-Animation das Intro vollständig und permanent löschen
+            setTimeout(() => {
+                if (introBlock) introBlock.remove();
+                window.scrollTo(0, 0);
+            }, 1200);
         }
 
         // Misst die physikalischen Pixel des Bildschirms aus und kalibriert die Scroll-Dauer
@@ -1535,7 +1619,10 @@
             
             setTheme(nextTheme);
             localStorage.setItem("theme-override", nextTheme);
-            document.getElementById("theme-indicator").innerText = "⚙️ Manuell fixiert";
+            
+            // Status-Text sowohl im Desktop- als auch im Mobile-Menü anpassen
+            const statusLabel = document.getElementById("theme-indicator");
+            if (statusLabel) statusLabel.innerText = "⚙️ Manuell fixiert";
         }
 
         // SPA ROUTER LOGIC
