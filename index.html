@@ -629,18 +629,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
-        .tab-pane {
-            display: none;
-        }
-
-        .tab-pane.active {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            animation: appleFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* Timeline */
         .timeline {
             position: relative;
             max-width: 800px;
@@ -906,6 +894,26 @@
             body.intro-done main {
                 padding-top: 110px !important;
             }
+            
+            /* Zeitleiste für mobile Displays optimieren */
+            .timeline::before {
+                display: none !important; /* Verberge die störende Linie auf dem Smartphone */
+            }
+            .timeline-item {
+                width: 100% !important;
+                left: 0 !important;
+                padding: 0 !important;
+                margin-bottom: 24px;
+            }
+            .timeline-item::after {
+                display: none !important; /* Verberge die Punkte */
+            }
+            .timeline-content {
+                text-align: left !important;
+                width: 100% !important;
+                padding: 20px !important;
+            }
+
             /* Verberge Desktop Statusanzeigen auf dem Handy */
             .theme-panel .theme-status,
             .theme-panel .theme-toggle {
@@ -917,18 +925,35 @@
                 top: 95px;
                 left: 0;
                 width: 100%;
-                background: var(--glass-bg);
-                backdrop-filter: var(--blur-header);
-                -webkit-backdrop-filter: var(--blur-header);
-                border: 1px solid var(--glass-border);
+                /* Deutlich kontrastreicheres, transluzentes Material für Mobilgeräte */
+                background: rgba(255, 255, 255, 0.94) !important;
+                border: 1px solid rgba(0, 0, 0, 0.15) !important;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+                backdrop-filter: blur(35px) !important;
+                -webkit-backdrop-filter: blur(35px) !important;
                 border-radius: 20px;
                 padding: 24px;
                 flex-direction: column;
                 gap: 16px;
-                box-shadow: var(--glass-shadow);
             }
-            nav.mobile-active {
-                display: flex;
+            [data-theme="dark"] nav {
+                background: rgba(20, 20, 22, 0.95) !important;
+                border: 1px solid rgba(255, 255, 255, 0.12) !important;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
+            }
+            nav a {
+                color: var(--text-main) !important;
+                font-weight: 600 !important; /* Erhöhter Kontrast durch stärkere Schriftgewichtung */
+                padding: 10px 14px;
+                border-radius: 10px;
+                transition: background 0.2s;
+            }
+            nav a:hover, nav a.active {
+                background: rgba(0, 0, 0, 0.05);
+                color: var(--accent) !important;
+            }
+            [data-theme="dark"] nav a:hover, [data-theme="dark"] nav a.active {
+                background: rgba(255, 255, 255, 0.06);
             }
             /* Mobiler Toggle Button im Dropdown */
             .theme-toggle-mobile {
@@ -936,10 +961,10 @@
                 background: var(--text-main);
                 border: none;
                 color: var(--card-bg);
-                padding: 8px 16px;
+                padding: 12px 16px;
                 border-radius: 980px;
                 cursor: pointer;
-                font-weight: 500;
+                font-weight: 600;
                 font-size: 13px;
                 text-align: center;
                 margin-top: 8px;
@@ -1347,7 +1372,7 @@
     </div>
 
     <!-- -------------------------------------------------------------
-         JAVASCRIPT LOGIK (ZWEIPHASEN-SCROLL-LOCK-ENGINE)
+         JAVASCRIPT LOGIK
          ------------------------------------------------------------- -->
     <script>
         // Sitzungsspeicher-Abfrage in Sicherheitsblock verpacken (verhindert lokale Dateisystem-Abstürze)
@@ -1371,6 +1396,8 @@
         // SCROLL-GEKOPPELTER "STOP-AND-GO" REVEAL EFFEKT
         // -------------------------------------------------------------
         function initSplitScrollEngine() {
+            updateScrollDimensions(); // Initiale Pixelmessung des Laptop-Bildschirms
+            
             if (isIntroFinished) {
                 // Falls bereits absolviert, Intro-DOM direkt entfernen und App sofort freigeben
                 bypassIntroElements();
@@ -1612,6 +1639,7 @@
             }
         }
 
+        // Manuelle Theme-Auswahl (Desktop + Mobile synchronisiert)
         function toggleThemeManual() {
             isThemeManual = true;
             const currentTheme = document.documentElement.getAttribute("data-theme");
@@ -1620,7 +1648,6 @@
             setTheme(nextTheme);
             localStorage.setItem("theme-override", nextTheme);
             
-            // Status-Text sowohl im Desktop- als auch im Mobile-Menü anpassen
             const statusLabel = document.getElementById("theme-indicator");
             if (statusLabel) statusLabel.innerText = "⚙️ Manuell fixiert";
         }
