@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thomas Hils Versicherungen | AXA Generalvertretung Hartmann & Co. GmbH</title>
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* -------------------------------------------------------------
+           CSS VARIABLEN (APPLE DESIGN LANGUAGE)
+           ------------------------------------------------------------- */
+        :root {
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --liquid-speed: 25s;
+            
+            /* Dynamischer Standardwert, wird per JS präzise überschrieben */
+            --max-scroll: 500px;
+            
+            /* Apple Light Mode (Vibrant Liquid Glass) */
+            --bg-gradient: linear-gradient(180deg, #f5f5f7 0%, #e8e8ed 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --glass-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+            --text-main: #1d1d1f;
+            --text-muted: #86868b;
+            --accent: #0071e3;
+            --accent-hover: #147ce5;
+            --accent-glow: rgba(0, 113, 227, 0.12);
+            --card-bg: rgba(255, 255, 255, 0.45);
+            --blur-header: blur(25px);
+            --blur-cards: blur(12px);
+        }
+
+        [data-theme="dark"] {
+            /* Apple Dark Mode (iOS Dark Liquid Style) */
+            --bg-gradient: linear-gradient(180deg, #000000 0%, #111112 100%);
+            --glass-bg: rgba(22, 22, 23, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            --text-main: #f5f5f7;
+            --text-muted: #86868b;
+            --accent: #0071e3;
+            --accent-hover: #2997ff;
+            --accent-glow: rgba(0, 113, 227, 0.25);
+            --card-bg: rgba(28, 28, 30, 0.5);
+            --blur-header: blur(25px);
+            --blur-cards: blur(12px);
+        }
+
+        /* Reset & Basis */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--text-main);
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.6s cubic-bezier(0.25, 1, 0.5, 1), color 0.4s ease;
+        }
+
+        /* -------------------------------------------------------------
+           RE-INTEGRIERTER LIQUID GLASS BACKGROUND
+           ------------------------------------------------------------- */
+        .liquid-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+            filter: blur(80px);
+            opacity: 0.75;
+            pointer-events: none !important;
+        }
+
+        .liquid-blob {
+            position: absolute;
+            border-radius: 50%;
+            mix-blend-mode: multiply;
+            will-change: transform;
+            transform: translate3d(0, 0, 0);
+            animation: floatBlob var(--liquid-speed) infinite alternate ease-in-out;
+            pointer-events: none !important;
+        }
+
+        .blob-1 {
+            width: 55vw;
+            height: 55vw;
+            background: rgba(56, 189, 248, 0.3);
+            top: -10%;
+            left: -10%;
+        }
+
+        .blob-2 {
+            width: 65vw;
+            height: 65vw;
+            background: rgba(168, 85, 247, 0.2);
+            bottom: -15%;
+            right: -10%;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 50vw;
+            height: 50vw;
+            background: rgba(74, 222, 128, 0.15);
+            top: 30%;
+            left: 25%;
+            animation-delay: -10s;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            50% { transform: translate3d(5%, 8%, 0) scale(1.1) rotate(120deg); }
+            100% { transform: translate3d(-3%, -3%, 0) scale(0.95) rotate(240deg); }
+        }
+
+        /* -------------------------------------------------------------
+           APPLE SPLIT INTRO OVERLAY (SCROLLGESTEUERT MIT ECHTEM SPLIT)
+           ------------------------------------------------------------- */
+        .split-intro {
+            position: relative;
+            height: var(--max-scroll); /* Bestimmt die Scroll-Distanz der Animation im Dokumentenfluss */
+            z-index: 2000;
+            pointer-events: none !important; /* Blockadefrei: Scrollen wird an Body weitergeleitet */
+        }
+
+        .split-sticky {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            z-index: 2000;
+            pointer-events: none !important;
+        }
+
+        .curtain {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: var(--bg-gradient);
+            overflow: hidden; /* Beschneidet den Inhalt exakt an der Trennlinie */
+            transition: background 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 1;
+            will-change: transform;
+            pointer-events: none !important;
+        }
+
+        .curtain-left {
+            left: 0;
+            transform: translate3d(0, 0, 0);
+        }
+
+        .curtain-right {
+            right: 0;
+            transform: translate3d(0, 0, 0);
+        }
+
+        /* Symmetrische Inhaltscontainer innerhalb der Vorhänge */
+        .intro-content-wrapper {
+            position: absolute;
+            top: 50%;
+            width: 100vw; /* Exakte Viewport-Breite für identischen Textumbruch */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            will-change: transform, opacity;
+            pointer-events: none !important;
+            z-index: 2; /* Liegt über der Trennlinie */
+        }
+
+        .curtain-left .intro-content-wrapper {
+            left: 0;
+            transform: translate3d(0, -50%, 0);
+        }
+
+        .curtain-right .intro-content-wrapper {
+            right: 0;
+            transform: translate3d(0, -50%, 0);
+        }
+
+        .intro-illustration {
+            color: var(--accent);
+            margin-bottom: 25px;
+            opacity: 0.95;
+        }
+
+        /* Minimalistisches, zentriertes Schutzschild ohne Haken und Hilfslinien */
+        .shield-svg {
+            width: 110px;
+            height: 110px;
+        }
+
+        @media (max-width: 768px) {
+            .shield-svg {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        .intro-headline {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        .intro-subline {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 35px;
+            letter-spacing: -0.01em;
+        }
+
+        .scroll-indicator {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scroll-arrow {
+            font-size: 16px;
+            animation: bounce 1.5s infinite alternate ease-in-out;
+        }
+
+        /* Dezent verkleinerte DSGVO Cookie Note */
+        .cookie-notice-intro {
+            font-size: 8.5px;
+            color: var(--text-muted);
+            opacity: 0.55;
+            max-width: 290px;
+            line-height: 1.4;
+            margin-top: 15px;
+            font-weight: 400;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        @keyframes bounce {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(0, 6px, 0); }
+        }
+
+        /* -------------------------------------------------------------
+           SCROLL-PLATZHALTER FÜR DAS INTRO
+           ------------------------------------------------------------- */
+        .scroll-spacer {
+            height: var(--max-scroll);
+            width: 100%;
+            pointer-events: none !important;
+        }
+
+        /* -------------------------------------------------------------
+           ABS-FIXED FLOATING HEADER DOCK (DIREKTES KIND VON BODY)
+           ------------------------------------------------------------- */
+        header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translate3d(-50%, 0, 0); /* Perfekte, felsenfeste horizontale Ausrichtung */
+            width: calc(100% - 40px);
+            max-width: 1240px; /* Absolut bündig mit dem max-width des Haupt-Contents */
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: var(--blur-header);
+            -webkit-backdrop-filter: var(--blur-header);
+            box-shadow: var(--glass-shadow);
+            border-radius: 24px;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            transition: background 0.4s ease, opacity 0.3s ease;
+            opacity: 0; /* Standardmäßig ausgeblendet während des Splits */
+            pointer-events: none;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-logo-img {
+            height: 85px;
+            width: auto;
+            object-fit: contain;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .brand-logo-img:hover {
+            transform: scale(1.02);
+        }
+
+        .brand-logo-fallback {
+            width: 50px;
+            height: 50px;
+            background: #0d2c54;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            border-radius: 12px;
+            font-size: 18px;
+        }
+
+        .brand-text {
+            border-left: 1px solid var(--glass-border);
+            padding-left: 14px;
+        }
+
+        .brand-subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: -0.01em;
+            max-width: 150px;
+            line-height: 1.3;
+            font-weight: 500;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: color 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: pointer;
+            letter-spacing: -0.01em;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--text-main);
+        }
+
+        /* Theme Panel */
+        .theme-panel {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .theme-status {
+            font-size: 10px;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.03);
+            padding: 4px 10px;
+            border-radius: 980px;
+            border: 1px solid var(--glass-border);
+        }
+
+        [data-theme="dark"] .theme-status {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .theme-toggle {
+            background: var(--text-main);
+            border: none;
+            color: var(--card-bg);
+            padding: 6px 14px;
+            border-radius: 980px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 11px;
+            transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.02);
+            opacity: 0.9;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 20px;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* -------------------------------------------------------------
+           HAUPT-CONTAINER
+           ------------------------------------------------------------- */
+        #app-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1300px;
+            margin-left: auto;
+            margin-right: auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0 20px;
+            will-change: transform;
+        }
+
+        /* -------------------------------------------------------------
+           SECTIONS
+           ------------------------------------------------------------- */
+        main {
+            flex-grow: 1;
+            margin-top: 40px;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .section-pane {
+            display: none;
+            animation: appleFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .section-pane.active {
+            display: block;
+        }
+
+        @keyframes appleFadeIn {
+            from { opacity: 0; transform: scale(0.98) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* -------------------------------------------------------------
+           STYLING: PAGES & CARDS
+           ------------------------------------------------------------- */
+        .hero-banner {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: var(--blur-header);
+            -webkit-backdrop-filter: var(--blur-header);
+            box-shadow: var(--glass-shadow);
+            border-radius: 28px;
+            padding: 70px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 40px;
+        }
+
+        .hero-banner h2 {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 15px;
+            line-height: 1.15;
+        }
+
+        .hero-banner p {
+            font-size: 17px;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto 35px auto;
+            line-height: 1.5;
+            letter-spacing: -0.015em;
+        }
+
+        .cta-group {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 980px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-bg);
+            border-color: rgba(0, 0, 0, 0.15);
+        }
+
+        /* Card Grid Layouts */
+        .glass-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: var(--blur-cards);
+            -webkit-backdrop-filter: var(--blur-cards);
+            box-shadow: var(--glass-shadow);
+            border-radius: 24px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+        }
+
+        .glass-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+        }
+
+        /* iOS Segmented Controls */
+        .tab-nav-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .tab-nav {
+            background: rgba(0, 0, 0, 0.04);
+            padding: 4px;
+            border-radius: 980px;
+            display: inline-flex;
+            gap: 4px;
+            margin: 0 auto 35px auto;
+            border: 1px solid var(--glass-border);
+        }
+
+        [data-theme="dark"] .tab-nav {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px 24px;
+            border-radius: 980px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            letter-spacing: -0.01em;
+        }
+
+        .tab-btn.active {
+            background: var(--glass-bg);
+            color: var(--text-main);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            animation: appleFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 40px auto 0 auto;
+            padding: 10px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 1px;
+            background: var(--glass-border);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+        }
+
+        .timeline-item.left { left: 0; text-align: right; }
+        .timeline-item.right { left: 50%; }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            right: -5px;
+            background-color: var(--accent);
+            border: 2px solid var(--glass-bg);
+            top: 18px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-item.right::after { left: -5px; }
+
+        .timeline-content {
+            padding: 24px;
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur-cards);
+            -webkit-backdrop-filter: var(--blur-cards);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+        }
+
+        /* -------------------------------------------------------------
+           KONTAKT, DIREKTLINKS & MAPS
+           ------------------------------------------------------------- */
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: -0.01em;
+        }
+
+        .form-control {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: var(--text-main);
+            outline: none;
+            font-family: var(--font-main);
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            background: var(--glass-bg);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        /* macOS Window Container für Karte */
+        .map-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            height: 350px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .map-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .route-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .link-address {
+            color: var(--text-main);
+            text-decoration: none;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+
+        .link-address:hover {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        /* -------------------------------------------------------------
+           FOOTER
+           ------------------------------------------------------------- */
+        footer {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: var(--blur-header);
+            -webkit-backdrop-filter: var(--blur-header);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: auto;
+            margin-bottom: 20px;
+            letter-spacing: -0.01em;
+        }
+
+        /* -------------------------------------------------------------
+           MODAL SYSTEM
+           ------------------------------------------------------------- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: var(--blur-header);
+            -webkit-backdrop-filter: var(--blur-header);
+            box-shadow: var(--glass-shadow);
+            width: 90%;
+            max-width: 460px;
+            border-radius: 28px;
+            padding: 30px;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        [data-theme="dark"] .modal-close {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* -------------------------------------------------------------
+           RESPONSIVELAYOUT (MOBILE MEDIA QUERIES)
+           ------------------------------------------------------------- */
+        @media (max-width: 900px) {
+            header {
+                padding: 16px 20px;
+                border-radius: 20px;
+                top: 15px; /* Dezent angepasst auf mobilen Geräten */
+            }
+            .brand-logo-img {
+                height: 60px;
+            }
+            nav {
+                display: none;
+                position: absolute;
+                top: 110px;
+                left: 0;
+                width: 100%;
+                background: var(--glass-bg);
+                backdrop-filter: var(--blur-header);
+                -webkit-backdrop-filter: var(--blur-header);
+                border: 1px solid var(--glass-border);
+                border-radius: 20px;
+                padding: 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            nav.mobile-active {
+                display: flex;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .contact-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .timeline::before {
+                left: 30px;
+            }
+            .timeline-item {
+                width: 100%;
+                padding-left: 60px;
+                padding-right: 0;
+            }
+            .timeline-item.left {
+                text-align: left;
+            }
+            .timeline-item.left::after, .timeline-item.right::after {
+                left: 25px;
+            }
+            .timeline-item.right {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Liquid Glass Background -->
+    <div class="liquid-container">
+        <div class="liquid-blob blob-1"></div>
+        <div class="liquid-blob blob-2"></div>
+        <div class="liquid-blob blob-3"></div>
+    </div>
+
+    <!-- -------------------------------------------------------------
+         APPLE SPLIT INTRO OVERLAY (SCROLLGESTEUERT MIT ECHTEM SPLIT)
+         ------------------------------------------------------------- -->
+    <div class="split-intro" id="split-intro-block">
+        <div class="split-sticky" id="split-sticky-element">
+            
+            <!-- Linker Vorhang mit geschnittener linker Hälfte des Textes -->
+            <div class="curtain curtain-left" id="curtain-left">
+                <div class="intro-content-wrapper" id="content-left">
+                    <div class="intro-illustration">
+                        <svg viewBox="0 0 100 100" class="shield-svg">
+                            <path d="M50,15 L80,25 C80,50 65,75 50,85 C35,75 20,50 20,25 L50,15 Z" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h1 class="intro-headline">Sicherheit. Schutz. Vertrauen.</h1>
+                    <p class="intro-subline">Für das, was im Leben wirklich zählt. Ihre Absicherung in sicheren Händen.</p>
+                    <div class="scroll-indicator">
+                        <span>Herunterscrollen zum Öffnen</span>
+                        <div class="scroll-arrow">↓</div>
+                        <!-- Kompakter, DSGVO-konformer Cookie Vermerk -->
+                        <p class="cookie-notice-intro">Diese Seite nutzt nur technisch notwendige Cookies. Durch die Nutzung stimmen Sie diesen zu.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rechter Vorhang mit geschnittener rechter Hälfte des Textes -->
+            <div class="curtain curtain-right" id="curtain-right">
+                <div class="intro-content-wrapper" id="content-right">
+                    <div class="intro-illustration">
+                        <svg viewBox="0 0 100 100" class="shield-svg">
+                            <path d="M50,15 L80,25 C80,50 65,75 50,85 C35,75 20,50 20,25 L50,15 Z" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <h1 class="intro-headline">Sicherheit. Schutz. Vertrauen.</h1>
+                    <p class="intro-subline">Für das, was im Leben wirklich zählt. Ihre Absicherung in sicheren Händen.</p>
+                    <div class="scroll-indicator">
+                        <span>Herunterscrollen zum Öffnen</span>
+                        <div class="scroll-arrow">↓</div>
+                        <!-- Kompakter, DSGVO-konformer Cookie Vermerk -->
+                        <p class="cookie-notice-intro">Diese Seite nutzt nur technisch notwendige Cookies. Durch die Nutzung stimmen Sie diesen zu.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scrollplatzhalter, der die native Scroll-Distanz im Dokumentenfluss vorgibt -->
+    <div class="scroll-spacer"></div>
+
+    <!-- ABS-FIXED FLOATING HEADER DOCK (Vollkommen unabhängig von app-container positioniert) -->
+    <header>
+        <div class="brand">
+            <img src="assets/logo.png" alt="Thomas Hils Versicherungen Logo" class="brand-logo-img" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
+            <div id="logo-fallback" class="brand-logo-fallback" style="display:none;">TH</div>
+            
+            <div class="brand-text">
+                <p class="brand-subtitle">Generalvertretung Hartmann & Co. GmbH</p>
+            </div>
+        </div>
+        
+        <nav id="navbar">
+            <a class="active" onclick="switchSection('home')">Home</a>
+            <a onclick="switchSection('greeting')">Grußwort</a>
+            <a onclick="switchSection('insurances')">Versicherungen</a>
+            <a onclick="switchSection('campaign')">Neue Aktion</a>
+            <a onclick="switchSection('about')">Wir über uns</a>
+            <a onclick="switchSection('nachhaltigkeit')">Nachhaltigkeit</a>
+            <a onclick="switchSection('contact')">Kontakt & Anfahrt</a>
+        </nav>
+
+        <div class="theme-panel">
+            <span class="theme-status" id="theme-indicator">Auto-Modus</span>
+            <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleThemeManual()">🌙 Modus wechseln</button>
+            <button class="menu-toggle" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </header>
+
+    <!-- Haupt-Layout (Webseite) -->
+    <div id="app-container">
+
+        <!-- HAUPTINHALT -->
+        <main>
+
+            <!-- SECTION: HOME -->
+            <section id="pane-home" class="section-pane active">
+                <div class="hero-banner">
+                    <h2>einfach. unkompliziert. erreichbar.</h2>
+                    <p>Ihre verlässliche Generalagentur des AXA Konzerns. Wir bieten Ihnen fundierte Expertise und moderne, digitale Abwicklung rund um Ihren Schutz.</p>
+                    <div class="cta-group">
+                        <button class="btn btn-primary" onclick="openInteractionModal('Kostenlose Risikoanalyse', 'Sichern Sie sich ein unverbindliches Erstgespräch. Wir analysieren Ihre aktuelle Deckung auf Einsparpotenziale und Leistungslücken.')">Kostenlose Risikoanalyse vereinbaren</button>
+                        <button class="btn btn-secondary" onclick="openInteractionModal('Rückruf anfordern', 'Geben Sie uns Ihre Nummer durch – wir melden uns zum Wunschtermin bei Ihnen.')">Rückruf anfordern</button>
+                        <button class="btn btn-secondary" onclick="openInteractionModal('Beratung buchen', 'Sichern Sie sich Ihren festen Online- oder Präsenztermin in unserer Kanzlei.')">Termin buchen</button>
+                    </div>
+                </div>
+
+                <div class="glass-grid">
+                    <div class="glass-card">
+                        <h3>Persönlich & Digital</h3>
+                        <p>Unsere Philosophie verbindet das Beste aus zwei Welten. Wir betreuen Sie auf Augenhöhe – modern per PDF und Videoberatung, oder in einem fundierten Gespräch vor Ort.</p>
+                    </div>
+                    <div class="glass-card">
+                        <h3>BVK-Mitgliedschaft</h3>
+                        <p>Als stolzes Mitglied im Bundesverband Deutscher Versicherungskaufleute e.V. (BVK) stehen wir für ehrbare Beratung, Transparenz und strikte Einhaltung gesetzlicher Richtlinien.</p>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Breite Expertise</h3>
+                        <p>Dank starker Kooperationen vermitteln wir erstklassige Lösungen von AXA, der DBV (Deutsche Beamtenversicherung) sowie der renommierten Uelzener Tierversicherung.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: GRUẞWORT -->
+            <section id="pane-greeting" class="section-pane">
+                <div class="glass-card" style="max-width: 800px; margin: 0 auto; padding: 40px;">
+                    <h2 style="margin-bottom: 20px; letter-spacing: -0.02em;">Herzlich willkommen</h2>
+                    <p style="margin-bottom: 15px; font-size: 15px; line-height: 1.7; letter-spacing: -0.01em;">
+                        Sehr geehrte Damen und Herren,<br><br>
+                        Sicherheit ist ein hohes Gut – insbesondere in einer sich stetig verändernden Welt. Als Ihr verlässlicher Dienstleister mit hohen Ansprüchen an die eigene Leistung legen wir größten Wert auf exzellenten Support und partnerschaftliche Betreuung. 
+                    </p>
+                    <p style="margin-bottom: 15px; font-size: 15px; line-height: 1.7; letter-spacing: -0.01em;">
+                        Diese Webpräsenz bietet Ihnen einen Überblick über unsere Kernkompetenzen und Service-Leistungen. Navigieren Sie durch unsere privaten und gewerblichen Absicherungskonzepte oder buchen Sie Ihren Beratungstermin direkt online. Wir sind da, wenn Sie uns brauchen.
+                    </p>
+                    <p style="margin-top: 30px; font-weight: 600;">
+                        Ihr Thomas Hils<br>
+                        <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">Geschäftsführer Hartmann & Co. GmbH</span>
+                    </p>
+                </div>
+            </section>
+
+            <!-- SECTION: VERSICHERUNGEN -->
+            <section id="pane-insurances" class="section-pane">
+                <div class="tab-nav-wrapper">
+                    <div class="tab-nav">
+                        <button class="tab-btn active" onclick="switchTab('private')">Private Versicherungen</button>
+                        <button class="tab-btn" onclick="switchTab('commercial')">Gewerbe & Unternehmen</button>
+                        <button class="tab-btn" onclick="switchTab('animals')">Versicherungen für Tiere</button>
+                    </div>
+                </div>
+
+                <!-- TAB PANE: PRIVATE -->
+                <div id="tab-private" class="tab-pane active">
+                    <div class="glass-card">
+                        <h3>Haus & Wohnen</h3>
+                        <p>Optimale Deckung für Hausrat und Wohngebäude. Schützen Sie Ihre wertvollen Besitztümer vor Elementarschäden, Brand, Leitungswasser und Diebstahl.</p>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Privat-Haftpflicht</h3>
+                        <p>Ein unverzichtbares Muss für jeden Haushalt. Sie schützt Sie im Alltag vor existenzbedrohenden Schadenersatzansprüchen Dritter.</p>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Fahrzeuge & Mobilität</h3>
+                        <p>Individuell anpassbare Tarife für Ihr Kraftfahrzeug mit starkem Kasko-Schutz. Schnelle Schadensregulierung garantiert.</p>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Gesundheit & Vorsorge</h3>
+                        <p>Umfassende Lösungen zur privaten Krankenversicherung und Zusatzabsicherung. Sichern Sie Ihren Lebensstandard im Alter ab.</p>
+                    </div>
+                </div>
+
+                <!-- TAB PANE: COMMERCIAL -->
+                <div id="tab-commercial" class="tab-pane">
+                    <div class="glass-card">
+                        <h3>Betriebshaftpflicht</h3>
+                        <p>Der grundlegende Schutz für Ihr Unternehmen. Deckt Sach-, Personen- und Vermögensschäden, die während Ihrer geschäftlichen Aktivitäten entstehen.</p>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Inhaltsversicherung</h3>
+                        <p>Ähnlich der Hausratversicherung schützt diese Ihre Betriebseinrichtung, Rohstoffe, Waren und technischen Geräte vor Schäden und Diebstahl.</p>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Cyber-Schutz</h3>
+                        <p>Absicherung vor finanziellen Ausfällen und Systemschäden durch Erpressung, Viren und Datenverlust infolge externer Angriffe.</p>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Betriebliche Altersvorsorge (bAV)</h3>
+                        <p>Steigern Sie Ihre Attraktivität als Arbeitgeber durch geförderte und steueroptimierte Vorsorgekonzepte für Ihr Team.</p>
+                    </div>
+                </div>
+
+                <!-- TAB PANE: ANIMALS -->
+                <div id="tab-animals" class="tab-pane">
+                    <div class="glass-card">
+                        <h3>Uelzener OP-Schutz</h3>
+                        <p>In starker Kooperation mit der Uelzener Tierversicherung bieten wir optimalen Versicherungsschutz für Hunde und Pferde. Deckt Tierarzt- und OP-Kosten bei Krankheit oder Unfall.</p>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Tierhalterhaftpflicht</h3>
+                        <p>Unersetzlich für Hunde- und Pferdebesitzer. Tritt bei Schäden ein, die Ihr Tier im Alltag an Dritten verursacht.</p>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Tierlebensversicherung</h3>
+                        <p>Besondere Absicherung für Zucht- und Sportpferde bei Verlust, Diebstahl oder Nottötung.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: NEUE AKTION -->
+            <section id="pane-campaign" class="section-pane">
+                <div class="hero-banner" style="background: linear-gradient(180deg, rgba(0, 113, 227, 0.05) 0%, rgba(168, 85, 247, 0.03) 100%); border: 1px solid var(--accent-glow);">
+                    <span style="background: var(--text-main); color: var(--card-bg); padding: 4px 12px; border-radius: 980px; font-size: 11px; font-weight: 500;">Aktuelle Aktion</span>
+                    <h2 style="margin-top: 15px;">Aktion: Digital-Vorteil</h2>
+                    <p>Unterstützen Sie uns bei unserer Nachhaltigkeitsinitiative. Bei Umstellung all Ihrer Altverträge auf rein digitale Korrespondenz (PDF statt Papierpost) prüfen wir Ihre Deckungen kostenlos und optimieren veraltete Tarife im Hinblick auf aktuelle Beitragsrabatte.</p>
+                    <button class="btn btn-primary" onclick="openInteractionModal('Digital-Vorteil prüfen', 'Wir nehmen gerne eine digitale Bestandsaufnahme Ihrer Alt-Tarife vor, um unkomplizierte Sparpotenziale freizulegen.')">Jetzt an der Aktion teilnehmen</button>
+                </div>
+            </section>
+
+            <!-- SECTION: WIR ÜBER UNS -->
+            <section id="pane-about" class="section-pane">
+                <div class="glass-card" style="text-align: center; max-width: 800px; margin: 0 auto 40px auto; border-radius: 24px;">
+                    <h2 style="letter-spacing: -0.02em;">Tradition & Fortschritt seit 1984</h2>
+                    <p style="margin-top: 10px;">Die Hartmann & Co. GmbH ist Ihr partnergeführter Dienstleister im Südwesten Deutschlands.</p>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <h3 style="font-size: 16px; font-weight:600;">1984</h3>
+                            <p style="font-size: 13px; margin-top: 5px;">Gründung der Hartmann & Co. GmbH durch Rolf Hartmann in Bad Dürrheim.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <h3 style="font-size: 16px; font-weight:600;">1994</h3>
+                            <p style="font-size: 13px; margin-top: 5px;">Bernhard Mundweiler wird aktiver Bestandteil der GmbH und leitet seither den Standort Grüningen (Donaueschingen).</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <h3 style="font-size: 16px; font-weight:600;">2000</h3>
+                            <p style="font-size: 13px; margin-top: 5px;">Der gelernte Versicherungskaufmann Thomas Hils tritt ein und betreut seither Privat- und Firmenkunden vom Standort Weigheim aus.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <h3 style="font-size: 16px; font-weight:600;">Fusion zur AXA Generalagentur</h3>
+                            <p style="font-size: 13px; margin-top: 5px;">Entwicklung über die DBV-Winterthur hin zur etablierten Generalagentur des modernen AXA Konzerns.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: NACHHALTIGKEIT -->
+            <section id="pane-nachhaltigkeit" class="section-pane">
+                <div class="glass-card" style="max-width: 800px; margin: 0 auto; padding: 40px; border-radius: 24px;">
+                    <h2 style="margin-bottom: 20px; text-align: center; letter-spacing: -0.02em;">Unsere digitale Verantwortung</h2>
+                    <p style="font-size: 15px; line-height: 1.7; margin-bottom: 20px; text-align: center; font-weight: 500;">
+                        „Ja, das sind wir – wir verzichten auf Unnötiges.“
+                    </p>
+                    <p style="font-size: 14px; line-height: 1.6; color: var(--text-muted); margin-bottom: 25px;">
+                        Nachhaltigkeit bedeutet für uns die sinnvolle Digitalisierung von Geschäftsprozessen. Durch den Einsatz digitaler Medien vermeiden wir gezielt unnötigen Papierverbrauch und reduzieren physische Fahrten zu Routineberatungen. Eine fachlich anspruchsvolle Beratung verlangt jedoch in entscheidenden Lebensphasen das persönliche Gespräch oder Besichtigungen vor Ort. Auch hierbei verzichten wir auf Ausdrucke und stellen alle Dokumente sauber via PDF bereit.
+                    </p>
+                    <div style="background: rgba(0,0,0,0.02); border: 1px solid var(--glass-border); padding: 20px; border-radius: 16px; font-size: 13px;">
+                        <strong>Ihre Vorteile durch unsere digitale Beratung:</strong>
+                        <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.7; color: var(--text-muted);">
+                            <li>Sofortiger Zugriff auf Ihre Policen im geschützten Portal</li>
+                            <li>Schonung wertvoller Holz- und Papierressourcen</li>
+                            <li>Verringerung des CO₂-Ausstoßes durch entfallende Anfahrtswege</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: KONTAKT & ANFAHRT -->
+            <section id="pane-contact" class="section-pane">
+                <div class="contact-wrapper">
+                    
+                    <!-- Formular -->
+                    <div class="glass-card">
+                        <h3 style="font-size: 20px; font-weight: 600; letter-spacing: -0.02em;">Direktanfrage</h3>
+                        <p style="margin-bottom: 20px; font-size: 13px;">Schreiben Sie uns unkompliziert. Wir rufen Sie gerne zurück.</p>
+                        
+                        <form class="contact-form" onsubmit="handleFormSubmit(event)">
+                            <div class="form-group">
+                                <label for="contact-name">Name</label>
+                                <input type="text" id="contact-name" class="form-control" placeholder="Ihr vollständiger Name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email">E-Mail</label>
+                                <input type="email" id="contact-email" class="form-control" placeholder="ihre@adresse.de" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-msg">Ihr Anliegen</label>
+                                <textarea id="contact-msg" rows="4" class="form-control" placeholder="Wie können wir Ihnen behilflich sein?" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="align-self: flex-start;">Nachricht absenden</button>
+                        </form>
+                    </div>
+
+                    <!-- Standorte & Karten -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; gap: 20px;">
+                        <div>
+                            <h3 style="font-size: 20px; font-weight: 600; letter-spacing: -0.02em;">Unsere Niederlassungen</h3>
+                            <p style="font-size: 13px;">Sprechen Sie direkt mit Ihrem Ansprechpartner vor Ort.</p>
+                        </div>
+                        
+                        <!-- Hauptsitz Villingen-Schwenningen -->
+                        <div style="border-left: 2px solid var(--accent); padding-left: 15px;">
+                            <strong style="font-size: 14px; font-weight: 600;">Hauptsitz Villingen-Schwenningen (Thomas Hils)</strong>
+                            <p style="font-size: 13px; margin-top: 5px; color: var(--text-muted); line-height: 1.5;">
+                                <a href="https://maps.google.com/?q=Aixheimer+Str.+2,+78056+Villingen-Schwenningen" target="_blank" class="link-address" title="Auf Google Maps suchen">
+                                    📍 Aixheimer Str. 2, 78056 Villingen-Schwenningen
+                                </a><br>
+                                Büro: 07425 327 330 | Mobil: 0172 7412273<br>
+                                E-Mail: <a href="mailto:info@hils-vs.de" style="color:var(--accent); text-decoration: none;">info@hils-vs.de</a>
+                            </p>
+                            <div class="route-buttons">
+                                <a href="https://www.google.com/maps/dir/?api=1&destination=Aixheimer+Str.+2,+78056+Villingen-Schwenningen" target="_blank" class="btn btn-secondary" style="padding: 6px 14px; font-size: 11px;">
+                                    🚗 Route planen (Google Maps)
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Zweigstelle Donaueschingen -->
+                        <div style="border-left: 2px solid #a855f7; padding-left: 15px;">
+                            <strong style="font-size: 14px; font-weight: 600;">Zweigstelle Donaueschingen (Bernhard Mundweiler)</strong>
+                            <p style="font-size: 13px; margin-top: 5px; color: var(--text-muted); line-height: 1.5;">
+                                <a href="https://maps.google.com/?q=H%C3%B6lzleweg+1,+78166+Donaueschingen" target="_blank" class="link-address" title="Auf Google Maps suchen">
+                                    📍 Hölzleweg 1, 78166 Donaueschingen
+                                </a><br>
+                                Telefon: 0771 14274 | E-Mail: bernhard.mundweiler@axa.de
+                            </p>
+                            <div class="route-buttons">
+                                <a href="https://www.google.com/maps/dir/?api=1&destination=H%C3%B6lzleweg+1,+78166+Donaueschingen" target="_blank" class="btn btn-secondary" style="padding: 6px 14px; font-size: 11px;">
+                                    🚗 Route planen (Google Maps)
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- OpenStreetMap Karte (Exakt zentriert auf Weigheim) -->
+                        <div class="map-container">
+                            <iframe 
+                                class="map-frame"
+                                src="https://www.openstreetmap.org/export/embed.html?bbox=8.605%2C48.055%2C8.616%2C48.064&layer=mapnik&marker=48.05965%2C8.61067"
+                                title="Anfahrtskarte Villingen-Schwenningen OpenStreetMap"
+                                loading="lazy">
+                            </iframe>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER -->
+        <footer>
+            <p>© 2026 Hartmann & Co. GmbH. Alle Rechte vorbehalten.</p>
+            <p style="margin-top: 8px; font-size: 11px;">
+                <a onclick="switchSection('contact')" style="cursor:pointer; text-decoration: underline;">Impressum & Kontakt</a> | 
+                <a onclick="alert('Datenschutzerklärung: Die Datenerhebung auf dieser Webseite erfolgt ausschließlich zur Bearbeitung direkter Kundenanfragen.')" style="cursor:pointer; text-decoration: underline;">Datenschutzerklärung</a> | 
+                Mitglied im BVK (Bundesverband Deutscher Versicherungskaufleute e.V.)
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="global-modal" onclick="closeInteractionModal(event)">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeInteractionModal(null)">×</button>
+            <h3 id="modal-title" style="margin-bottom: 12px; font-size: 18px; font-weight:600; letter-spacing: -0.02em;">Anfrage</h3>
+            <p id="modal-desc" style="color: var(--text-muted); font-size: 13px; line-height: 1.5; margin-bottom: 20px; letter-spacing: -0.01em;"></p>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <input type="text" id="modal-name" class="form-control" placeholder="Ihr Name" required>
+                <input type="text" id="modal-phone" class="form-control" placeholder="Telefonnummer / E-Mail" required>
+                <button class="btn btn-primary" onclick="submitModalRequest()">Unverbindlich anfragen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- -------------------------------------------------------------
+         JAVASCRIPT LOGIK (ABSOLUT KRASH- & BLOCKADEFREI)
+         ------------------------------------------------------------- -->
+    <script>
+        // Sitzungsspeicher-Abfrage in Sicherheitsblock verpacken (verhindert lokale Dateisystem-Abstürze)
+        let isIntroFinished = false;
+        try {
+            isIntroFinished = sessionStorage.getItem('intro-finished') === 'true';
+        } catch (e) {
+            console.warn("sessionStorage ist in dieser Umgebung blockiert.", e);
+        }
+
+        let maxScroll = 500; // Dynamischer Fallback-Wert
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initThemeEngine();
+            initSplitScrollEngine();
+        });
+
+        // -------------------------------------------------------------
+        // SCROLL-GEKOPPELTER "STOP-AND-GO" REVEAL EFFEKT
+        // -------------------------------------------------------------
+        function initSplitScrollEngine() {
+            updateScrollDimensions(); // Initiale Pixelmessung des Laptop-Bildschirms
+            
+            if (isIntroFinished) {
+                // Falls bereits absolviert, Intro-DOM direkt entfernen und App sofort freigeben
+                bypassIntroElements();
+                return;
+            }
+
+            window.addEventListener('resize', updateScrollDimensions);
+            window.addEventListener('scroll', handleIntroScroll, { passive: true });
+            handleIntroScroll(); // Initialer Aufruf
+        }
+
+        // Misst die physikalischen Pixel des Bildschirms aus und kalibriert die Scroll-Dauer
+        function updateScrollDimensions() {
+            if (isIntroFinished) return;
+            
+            // Scrolltiefe entspricht ca. 70% der vertikalen Bildschirmhöhe des Laptops
+            // Eingegrenzt zwischen 400px und 800px für ein harmonisches Benutzererlebnis
+            maxScroll = Math.max(400, Math.min(800, Math.round(window.innerHeight * 0.7)));
+            
+            // Setzt die CSS-Variable für den Spacer im Dokumentenfluss
+            document.documentElement.style.setProperty('--max-scroll', `${maxScroll}px`);
+        }
+
+        function bypassIntroElements() {
+            const introBlock = document.getElementById('split-intro-block');
+            const spacer = document.querySelector('.scroll-spacer');
+            const appContainer = document.getElementById('app-container');
+            const header = document.querySelector('header');
+
+            // Physisches Löschen der Elemente aus dem DOM, um Render-Ressourcen einzusparen
+            if (introBlock) introBlock.remove();
+            if (spacer) spacer.remove();
+            
+            if (appContainer) {
+                appContainer.style.position = 'relative';
+                appContainer.style.top = '';
+                appContainer.style.left = '';
+                appContainer.style.width = '';
+                appContainer.style.transform = '';
+            }
+            if (header) {
+                header.style.opacity = 1;
+                header.style.pointerEvents = 'auto';
+            }
+        }
+
+        function handleIntroScroll() {
+            if (isIntroFinished) return;
+
+            const scrollTop = window.scrollY;
+            const scrollDivisor = maxScroll > 0 ? maxScroll : 500;
+            const progress = Math.min(scrollTop / scrollDivisor, 1);
+            
+            const leftCurtain = document.getElementById('curtain-left');
+            const rightCurtain = document.getElementById('curtain-right');
+            const contentLeft = document.getElementById('content-left');
+            const contentRight = document.getElementById('content-right');
+            const stickyBlock = document.getElementById('split-sticky-element');
+            const introBlock = document.getElementById('split-intro-block');
+            const appContainer = document.getElementById('app-container');
+            const header = document.querySelector('header');
+
+            // 1. Vorhänge proportional zur Scrolltiefe teilen
+            if (leftCurtain && rightCurtain) {
+                leftCurtain.style.transform = `translate3d(${-progress * 100}%, 0, 0)`;
+                rightCurtain.style.transform = `translate3d(${progress * 100}%, 0, 0)`;
+            }
+
+            // 2. Inhaltshälften deckungsgleich ausblenden und dezent stauchen
+            const wrappers = [contentLeft, contentRight];
+            wrappers.forEach(w => {
+                if (w) {
+                    w.style.opacity = 1 - progress;
+                    w.style.transform = `translate3d(0, calc(-50% - ${progress * 50}px), 0) scale(${1 - progress * 0.05})`;
+                }
+            });
+
+            // 3. ECHTE APPLE ABSOLUTE-TO-RELATIVE TRANSITION
+            if (appContainer) {
+                if (scrollTop < scrollDivisor) {
+                    appContainer.style.position = 'absolute';
+                    appContainer.style.top = '0';
+                    appContainer.style.left = '0';
+                    appContainer.style.width = '100%';
+                    appContainer.style.transform = `translate3d(0, ${scrollTop}px, 0)`;
+                } else {
+                    appContainer.style.position = 'relative';
+                    appContainer.style.top = '';
+                    appContainer.style.left = '';
+                    appContainer.style.width = '';
+                    appContainer.style.transform = ''; // Löscht die Transformation vollständig für nativen position: sticky Support
+                }
+            }
+
+            // 4. Header dezent einfaden lassen, sobald der Split fast vollendet ist
+            if (header) {
+                if (scrollTop < scrollDivisor) {
+                    header.style.opacity = Math.max(0, (progress - 0.7) / 0.3); // Fade in von 70% bis 100% Split
+                    header.style.pointerEvents = 'none';
+                } else {
+                    header.style.opacity = 1;
+                    header.style.pointerEvents = 'auto';
+                }
+            }
+
+            // 5. Bei Erreichen der maximalen Weite das Intro DAUERHAFT deaktiveren (Session Lock)
+            if (progress >= 1) {
+                isIntroFinished = true;
+                try {
+                    sessionStorage.setItem('intro-finished', 'true');
+                } catch (e) {}
+                
+                // Entferne Scroll-Listener und zerstöre Intro-Einflüsse aus dieser Sitzung vollständig (DOM Garbage Collection)
+                window.removeEventListener('scroll', handleIntroScroll);
+                window.removeEventListener('resize', updateScrollDimensions);
+                bypassIntroElements();
+                
+                // Setze den Scrollbalken auf 0 zurück, damit der Nutzer am echten Seitenanfang startet
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // DUAL THEME ENGINE (SYSTEM + ZEITSTEUERUNG)
+        // -------------------------------------------------------------
+        let isThemeManual = false;
+
+        function initThemeEngine() {
+            const savedPref = localStorage.getItem("theme-override");
+            if (savedPref) {
+                isThemeManual = true;
+                setTheme(savedPref);
+            } else {
+                checkThemeAuto();
+                
+                // Lausche direkt auf System-Theme Änderungen am Laptop
+                if (window.matchMedia) {
+                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                        checkThemeAuto();
+                    });
+                }
+                setInterval(checkThemeAuto, 300000);
+            }
+        }
+
+        function checkThemeAuto() {
+            if (isThemeManual) return;
+            
+            // 1. Abfrage Laptop-Systemeinstellung (Dunkelmodus / Hellmodus)
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // 2. Zeitbasierter Fallback (06:00 - 18:00 Uhr)
+            const hour = new Date().getHours();
+            const isDayTime = (hour >= 6 && hour < 18);
+            
+            let targetTheme = "light";
+            let statusText = "";
+            
+            // Bevorzuge Laptop-Systemeinstellung
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').media !== 'not all') {
+                targetTheme = prefersDark ? "dark" : "light";
+                statusText = prefersDark ? "🌙 System-Dunkel" : "☀️ System-Hell";
+            } else {
+                targetTheme = isDayTime ? "light" : "dark";
+                statusText = isDayTime ? "☀️ Auto-Tagmodus" : "🌙 Auto-Nachtmodus";
+            }
+            
+            setTheme(targetTheme);
+            document.getElementById("theme-indicator").innerText = statusText;
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute("data-theme", theme);
+            const toggleBtn = document.getElementById("theme-toggle-btn");
+            if (theme === "dark") {
+                toggleBtn.innerText = "☀️ Modus wechseln";
+            } else {
+                toggleBtn.innerText = "🌙 Modus wechseln";
+            }
+        }
+
+        function toggleThemeManual() {
+            isThemeManual = true;
+            const currentTheme = document.documentElement.getAttribute("data-theme");
+            const nextTheme = currentTheme === "dark" ? "light" : "dark";
+            
+            setTheme(nextTheme);
+            localStorage.setItem("theme-override", nextTheme);
+            document.getElementById("theme-indicator").innerText = "⚙️ Manuell fixiert";
+        }
+
+        // SPA ROUTER LOGIC
+        function switchSection(sectionId) {
+            const sections = document.querySelectorAll(".section-pane");
+            sections.forEach(s => s.classList.remove("active"));
+            
+            const target = document.getElementById(`pane-${sectionId}`);
+            if (target) {
+                target.classList.add("active");
+            }
+            
+            const navLinks = document.querySelectorAll("nav a");
+            navLinks.forEach(link => {
+                link.classList.remove("active");
+                if (link.getAttribute("onclick").includes(sectionId)) {
+                    link.classList.add("active");
+                }
+            });
+
+            document.getElementById("navbar").classList.remove("mobile-active");
+            
+            // Nach der Sektionsauswahl sanft nach oben scrollen
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            const nav = document.getElementById("navbar");
+            nav.classList.toggle("mobile-active");
+        }
+
+        // Tab-Navigation
+        function switchTab(tabId) {
+            const tabs = document.querySelectorAll(".tab-pane");
+            tabs.forEach(t => t.classList.remove("active"));
+            
+            const tabButtons = document.querySelectorAll(".tab-btn");
+            tabButtons.forEach(b => b.classList.remove("active"));
+            
+            document.getElementById(`tab-${tabId}`).classList.add("active");
+            
+            const activeBtn = Array.from(tabButtons).find(btn => btn.getAttribute("onclick").includes(tabId));
+            if (activeBtn) activeBtn.classList.add("active");
+        }
+
+        // Formular-Handling
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById("contact-name").value;
+            alert(`Vielen Dank, Herr/Frau ${name}! Ihre Nachricht wurde erfasst.`);
+            e.target.reset();
+        }
+
+        // Modal Interaktionen
+        function openInteractionModal(title, desc) {
+            document.getElementById("modal-title").innerText = title;
+            document.getElementById("modal-desc").innerText = desc;
+            
+            const modal = document.getElementById("global-modal");
+            modal.style.display = "flex";
+            setTimeout(() => {
+                modal.classList.add("active");
+            }, 10);
+        }
+
+        function closeInteractionModal(e) {
+            if (!e || e.target === document.getElementById("global-modal") || e.target.classList.contains("modal-close")) {
+                const modal = document.getElementById("global-modal");
+                modal.classList.remove("active");
+                setTimeout(() => {
+                    modal.style.display = "none";
+                }, 400);
+            }
+        }
+
+        function submitModalRequest() {
+            const name = document.getElementById("modal-name").value;
+            const contact = document.getElementById("modal-phone").value;
+            if(!name || !contact) {
+                alert("Bitte füllen Sie alle Felder aus.");
+                return;
+            }
+            alert(`Anfrage erhalten! Vielen Dank ${name}.`);
+            closeInteractionModal(null);
+            document.getElementById("modal-name").value = "";
+            document.getElementById("modal-phone").value = "";
+        }
+    </script>
+</body>
+</html>
