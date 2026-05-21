@@ -68,7 +68,9 @@
         }
 
         /* -------------------------------------------------------------
+           =============================================================
            [MASKE START] - ZUGANGSMASKE CSS (HIER LÖSCHEN UM ZU ENTFERNEN)
+           =============================================================
            ------------------------------------------------------------- */
         .gate-overlay {
             position: fixed;
@@ -155,7 +157,9 @@
             font-weight: 500;
         }
         /* -------------------------------------------------------------
+           =============================================================
            [MASKE ENDE] - ZUGANGSMASKE CSS
+           =============================================================
            ------------------------------------------------------------- */
 
         /* -------------------------------------------------------------
@@ -1024,6 +1028,8 @@
                 border-radius: 20px;
                 top: 15px; /* Dezent angepasst auf mobilen Geräten */
                 overflow: visible !important; /* WICHTIG: Erlaubt dem mobilen Menü, nach unten herauszuragen */
+                z-index: 10000 !important; /* Priorisiert die Klickzone des Headers */
+                pointer-events: auto !important;
             }
             .brand-logo-img {
                 height: 50px;
@@ -1090,12 +1096,15 @@
                 padding: 24px;
                 flex-direction: column;
                 gap: 16px;
-                z-index: 10000 !important; /* Höchste Priorität: Überlagert allen Content im Hintergrund */
+                z-index: 20000 !important; /* Höchste Priorität: Überlagert allen Content im Hintergrund */
             }
             [data-theme="dark"] nav {
                 background: rgba(20, 20, 22, 0.97) !important;
                 border: 1px solid rgba(255, 255, 255, 0.15) !important;
                 box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
+            }
+            nav.mobile-active {
+                display: flex !important; /* Löst die blockierende CSS-Spezifität */
             }
             nav a {
                 color: var(--text-main) !important;
@@ -1134,7 +1143,7 @@
         }
     </style>
 </head>
-<body class="intro-active">
+<body>
 
     <!-- Blitzschneller Check vor dem grafischen Rendering, um Flackern (FOUC) beim Neuladen zu verhindern -->
     <script>
@@ -1148,9 +1157,9 @@
         }
     </script>
 
-    <!-- ============================================================= -->
-    <!-- [MASKE START] - ZUGANGSMASKE HTML (HIER LÖSCHEN UM ZU ENTFERNEN) -->
-    <!-- ============================================================= -->
+    <!-- ========================================================================================== -->
+    <!-- [MASKE START] - ZUGANGSMASKE HTML (NUR DIESEN MARKIRTEN BLOCK LÖSCHEN UM SPÄTER ZU ENTFERNEN) -->
+    <!-- ========================================================================================== -->
     <div class="gate-overlay" id="dev-gate-mask">
         <div class="gate-card">
             <div class="gate-title">HILS SECURE ACCESS</div>
@@ -1160,9 +1169,9 @@
             <div id="gate-error-message" class="gate-error">Ungültiger Zugangsschlüssel!</div>
         </div>
     </div>
-    <!-- ============================================================= -->
+    <!-- ========================================================================================== -->
     <!-- [MASKE ENDE] - ZUGANGSMASKE HTML -->
-    <!-- ============================================================= -->
+    <!-- ========================================================================================== -->
 
     <!-- Liquid Glass Background -->
     <div class="liquid-container">
@@ -1625,7 +1634,7 @@
     </div>
 
     <!-- -------------------------------------------------------------
-         JAVASCRIPT LOGIK
+         JAVASCRIPT LOGIK (ENTKOPPELTE ENGINE)
          ------------------------------------------------------------- -->
     <script>
         // =============================================================
@@ -1667,6 +1676,9 @@
                     gate.style.transform = 'scale(0.95)';
                     setTimeout(() => {
                         gate.remove();
+                        // WICHTIG: Die Split-Scroll-Engine wird ERST JETZT initialisiert,
+                        // um das Überlagern von Klicks der Zugangstaste auf das Intro zu verhindern!
+                        initSplitScrollEngine();
                     }, 600);
                 }
             } else {
@@ -1696,7 +1708,10 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             initThemeEngine();
-            initSplitScrollEngine();
+            // Falls bereits freigeschaltet, direkt das Intro verarbeiten
+            if (isGateAuthorized || isIntroFinished) {
+                initSplitScrollEngine();
+            }
         });
 
         // -------------------------------------------------------------
@@ -1737,7 +1752,6 @@
                 // Lausche auf die erste leichte Wischgeste oder Scroll-Bewegung
                 window.addEventListener('scroll', triggerMobileSplit, { once: true, passive: true });
                 window.addEventListener('touchmove', triggerMobileSplit, { once: true, passive: true });
-                window.addEventListener('click', triggerMobileSplit, { once: true, passive: true });
             } else {
                 // Desktop-Konfiguration (Stop-and-Go gekoppelt)
                 updateScrollDimensions();
