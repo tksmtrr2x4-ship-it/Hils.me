@@ -135,7 +135,7 @@
             width: 100vw;
             height: 100vh;
             z-index: 2000;
-            pointer-events: none !important; /* Blockadefrei: Scrollgesten gehen an den Spacer */
+            pointer-events: none !important; /* Blockadefrei: Scrollen wird an Body weitergeleitet */
         }
 
         .split-sticky {
@@ -307,7 +307,7 @@
         }
 
         .brand-logo-img {
-            height: 85px;
+            height: 65px; /* Reduziert von 85px für optimal proportionierte, schlanke Header-Maße */
             width: auto;
             object-fit: contain;
             display: block;
@@ -412,7 +412,7 @@
         }
 
         /* -------------------------------------------------------------
-           HAUPT-CONTAINER (REIN IM NORMALEN DOKUMENTENFLUSS)
+           HAUPT-CONTAINER
            ------------------------------------------------------------- */
         #app-container {
             position: relative;
@@ -433,7 +433,7 @@
            ------------------------------------------------------------- */
         main {
             flex-grow: 1;
-            margin-top: 40px;
+            padding-top: 140px; /* Sicherer statischer Abstand verhindert Überlappung des Headers mit dem Banner-Inhalt */
             margin-bottom: 60px;
             position: relative;
         }
@@ -837,6 +837,37 @@
         }
 
         /* -------------------------------------------------------------
+           SPEZIELLE INTRO-ZUSTANDSSTEUERUNGS-REGELN (Anti-Flicker)
+           ------------------------------------------------------------- */
+        /* Solange das Intro noch aktiv ist: */
+        body.intro-active header {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Sobald das Intro komplett beendet und gelöscht wurde: */
+        body.intro-done .scroll-spacer {
+            display: none !important;
+        }
+        body.intro-done .split-intro {
+            display: none !important;
+        }
+        body.intro-done header {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        body.intro-done #app-container {
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            transform: none !important;
+        }
+        body.intro-done main {
+            padding-top: 140px !important;
+        }
+
+        /* -------------------------------------------------------------
            RESPONSIVELAYOUT (MOBILE MEDIA QUERIES)
            ------------------------------------------------------------- */
         @media (max-width: 900px) {
@@ -846,7 +877,13 @@
                 top: 15px; /* Dezent angepasst auf mobilen Geräten */
             }
             .brand-logo-img {
-                height: 60px;
+                height: 50px;
+            }
+            main {
+                padding-top: 110px; /* Kompakterer Abstand auf Mobilgeräten */
+            }
+            body.intro-done main {
+                padding-top: 110px !important;
             }
             nav {
                 display: none;
@@ -892,7 +929,19 @@
         }
     </style>
 </head>
-<body>
+<body class="intro-active">
+
+    <!-- Blitzschneller Check vor dem grafischen Rendering, um Flackern (FOUC) beim Neuladen zu verhindern -->
+    <script>
+        try {
+            if (sessionStorage.getItem('intro-finished') === 'true') {
+                document.body.classList.remove('intro-active');
+                document.body.classList.add('intro-done');
+            }
+        } catch (e) {
+            console.warn("sessionStorage-Abfrage im Body-Start blockiert.", e);
+        }
+    </script>
 
     <!-- Liquid Glass Background -->
     <div class="liquid-container">
@@ -1049,7 +1098,7 @@
                     </div>
                     <div class="glass-card">
                         <h3>Privat-Haftpflicht</h3>
-                        <p>Ein unverzicht Muss für jeden Haushalt. Sie schützt Sie im Alltag vor existenzbedrohenden Schadenersatzansprüchen Dritter.</p>
+                        <p>Ein unverzichtbares Muss für jeden Haushalt. Sie schützt Sie im Alltag vor existenzbedrohenden Schadenersatzansprüchen Dritter.</p>
                     </div>
                     <div class="glass-card">
                         <h3>Fahrzeuge & Mobilität</h3>
